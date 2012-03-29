@@ -34,7 +34,6 @@ public class MHIActivity extends Activity {
 		@Override
 		public void run() {
 			String capture = "";
-			while (true) {
 				while (listen) {
 					capture = execCommandLine("netcfg");
 					if (capture.contains("bnep")) {
@@ -98,7 +97,6 @@ public class MHIActivity extends Activity {
 					}
 				}
 			}
-		}
 	});
 
 	private void init() {
@@ -106,18 +104,18 @@ public class MHIActivity extends Activity {
 
 		HashMap<String, String> tempMap1 = new HashMap<String, String>();
 		tempMap1.put("D8:54:3A:08:42:3F", "10.0.12.1");
-		tempMap1.put("F4:FC:32:7E:CF:15", "10.0.13.1");
+		tempMap1.put("F4:FC:32:72:DA:EE", "10.0.13.1");
 		macIPcollection.put("F4:FC:32:4F:0D:D6", tempMap1);
 
 		HashMap<String, String> tempMap2 = new HashMap<String, String>();
 		tempMap2.put("F4:FC:32:4F:0D:D6", "10.0.12.1");
-		tempMap2.put("F4:FC:32:7E:CF:15", "10.0.23.1");
+		tempMap2.put("F4:FC:32:72:DA:EE", "10.0.23.1");
 		macIPcollection.put("D8:54:3A:08:42:3F", tempMap2);
 
 		HashMap<String, String> tempMap3 = new HashMap<String, String>();
 		tempMap3.put("F4:FC:32:4F:0D:D6", "10.0.13.1");
 		tempMap3.put("D8:54:3A:08:42:3F", "10.0.23.1");
-		macIPcollection.put("F4:FC:32:7E:CF:15", tempMap3);
+		macIPcollection.put("F4:FC:72:DA:EE", tempMap3);
 	}
 
     /** Called when the activity is first created. */
@@ -140,7 +138,6 @@ public class MHIActivity extends Activity {
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
 		
-		newThread.start();
     }
 
 	private void populateHardCodedList() {
@@ -165,18 +162,18 @@ public class MHIActivity extends Activity {
 		
 		HashMap<String, String> tempMap1 = new HashMap<String, String>();
 		tempMap1.put("D8:54:3A:08:42:3F", "10.0.12.2");
-		tempMap1.put("F4:FC:32:7E:CF:15", "10.0.13.2");
+		tempMap1.put("F4:FC:32:72:DA:EE", "10.0.13.2");
 		macIPcollection_client.put("F4:FC:32:4F:0D:D6", tempMap1);
 
 		HashMap<String, String> tempMap2 = new HashMap<String, String>();
 		tempMap2.put("F4:FC:32:4F:0D:D6", "10.0.12.2");
-		tempMap2.put("F4:FC:32:7E:CF:15", "10.0.23.2");
+		tempMap2.put("F4:FC:32:72:DA:EE", "10.0.23.2");
 		macIPcollection_client.put("D8:54:3A:08:42:3F", tempMap2);
 
 		HashMap<String, String> tempMap3 = new HashMap<String, String>();
 		tempMap3.put("F4:FC:32:4F:0D:D6", "10.0.13.2");
 		tempMap3.put("D8:54:3A:08:42:3F", "10.0.23.2");
-		macIPcollection_client.put("F4:FC:32:7E:CF:15", tempMap3);
+		macIPcollection_client.put("F4:FC:32:72:DA:EE", tempMap3);
 	}
 	
 	public void onExitClicked(View v){
@@ -251,8 +248,11 @@ public class MHIActivity extends Activity {
 			execCommandLine("pand --listen --role NAP");
 
 			listen = true;
+			newThread.start();
 		} else {
 			listen = false;
+			 execCommandLine("pand --killall");
+	         execCommandLine("killall -9 pand");
 		}
 	}
 	public void onClientClicked(View v) throws InterruptedException{
@@ -270,10 +270,14 @@ public class MHIActivity extends Activity {
 				String serverMAC = findServer();
 				HashMap<String,String> level1Map = (macIPcollection_client.get(myAddress));
 				if(level1Map == null){
+					execCommandLine("pand --killall");
+					execCommandLine("killall -9 pand");
 					return;
 				}
 				String myIP = level1Map.get(serverMAC);
 				if(myIP == null){
+					execCommandLine("pand --killall");
+					execCommandLine("killall -9 pand");
 					return;
 				}
 				String myGateway = (String) myIP.subSequence(0, myIP.length()-1);
@@ -282,6 +286,11 @@ public class MHIActivity extends Activity {
 				execCommandLine("route add default gw "+myGateway+" dev bnep0");
 				execCommandLine("setprop net.dns1 "+myGateway);
 				execCommandLine("echo 1 > /proc/sys/net/ipv4/ip_forward");
+		}
+		else
+		{
+			 execCommandLine("pand --killall");
+	         execCommandLine("killall -9 pand");
 		}
 	}
 	
@@ -292,7 +301,7 @@ public class MHIActivity extends Activity {
 			 Entry<String, String> pairs = (Entry<String, String>)it.next();
 			 String MAC = pairs.getValue();
 			 execCommandLine("pand --connect "+MAC);
-			 Thread.sleep(2000);
+			 Thread.sleep(4000);
 			 String capture = execCommandLine("/system/bin/netcfg");
 		     if(capture.contains("bnep0") == true) {
 				 returnValue = MAC;
