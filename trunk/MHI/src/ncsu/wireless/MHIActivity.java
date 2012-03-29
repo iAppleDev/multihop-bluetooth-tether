@@ -115,7 +115,7 @@ public class MHIActivity extends Activity {
 		HashMap<String, String> tempMap3 = new HashMap<String, String>();
 		tempMap3.put("F4:FC:32:4F:0D:D6", "10.0.13.1");
 		tempMap3.put("D8:54:3A:08:42:3F", "10.0.23.1");
-		macIPcollection.put("F4:FC:72:DA:EE", tempMap3);
+		macIPcollection.put("F4:FC:32:72:DA:EE", tempMap3);
 	}
 
     /** Called when the activity is first created. */
