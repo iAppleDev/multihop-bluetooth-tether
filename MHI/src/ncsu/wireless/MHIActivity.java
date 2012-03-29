@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -17,7 +16,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -27,7 +25,101 @@ public class MHIActivity extends Activity {
 	public HashMap<String, String> MACList;
 	public HashMap<String, HashMap<String, String>> macIPcollection_client;
 	
-	private String myAddress = "";
+	private static final String NETMASK = "255.255.255.0";
+	private String myAddress;
+	private HashMap<String, HashMap<String, String>> macIPcollection;
+	boolean listen = false;
+	Thread newThread = new Thread(new Runnable() {
+
+		@Override
+		public void run() {
+			String capture = "";
+			while (true) {
+				while (listen) {
+					capture = execCommandLine("netcfg");
+					if (capture.contains("bnep")) {
+						String[] captutedLines = capture.split("\n");
+						for (String line : captutedLines) {
+							if (line.contains("bnep0")
+									&& line.contains("0.0.0.0")) {
+								String pandCmd = "pand --show --list -l";
+
+								String output = execCommandLine(pandCmd);
+								String[] outPutLines = output.split("\n");
+								for (String outputLine : outPutLines) {
+									if (outputLine.contains("bnep0")) {
+											String[] outputArray = outputLine
+													.split(" ");
+											String myIP = (macIPcollection
+													.get(myAddress))
+													.get(outputArray[1]);
+											String cmd = "ifconfig bnep0 "
+													+ myIP + " netmask "
+													+ NETMASK + " up";
+											execCommandLine(cmd);
+											execCommandLine("iptables -t nat -A POSTROUTING -o tiwlan0 -j MASQUERADE");
+											execCommandLine("iptables -A FORWARD -i bnep0 -j ACCEPT");
+											execCommandLine("echo 1 > /proc/sys/net/ipv4/ip_forward");
+									}
+								}
+							}
+							if (line.contains("bnep1")
+									&& line.contains("0.0.0.0")) {
+								String pandCmd = "pand --show --list -l";
+
+								String output = execCommandLine(pandCmd);
+								String[] outPutLines = output.split("\n");
+								for (String outputLine : outPutLines) {
+									if (outputLine.contains("bnep1")) {
+											String[] outputArray = outputLine
+													.split(" ");
+											String myIP = (macIPcollection
+													.get(myAddress))
+													.get(outputArray[1]);
+											String cmd = "ifconfig bnep1 "
+													+ myIP + " netmask "
+													+ NETMASK + " up";
+											execCommandLine(cmd);
+											execCommandLine("iptables -t nat -A POSTROUTING -o tiwlan0 -j MASQUERADE");
+											execCommandLine("iptables -A FORWARD -i bnep0 -j ACCEPT");
+											execCommandLine("echo 1 > /proc/sys/net/ipv4/ip_forward");
+									}
+								}
+							}
+						}
+
+					} else {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+	});
+
+	private void init() {
+		macIPcollection = new HashMap<String, HashMap<String, String>>();
+
+		HashMap<String, String> tempMap1 = new HashMap<String, String>();
+		tempMap1.put("D8:54:3A:08:42:3F", "10.0.12.1");
+		tempMap1.put("F4:FC:32:7E:CF:15", "10.0.13.1");
+		macIPcollection.put("F4:FC:32:4F:0D:D6", tempMap1);
+
+		HashMap<String, String> tempMap2 = new HashMap<String, String>();
+		tempMap2.put("F4:FC:32:4F:0D:D6", "10.0.12.1");
+		tempMap2.put("F4:FC:32:7E:CF:15", "10.0.23.1");
+		macIPcollection.put("D8:54:3A:08:42:3F", tempMap2);
+
+		HashMap<String, String> tempMap3 = new HashMap<String, String>();
+		tempMap3.put("F4:FC:32:4F:0D:D6", "10.0.13.1");
+		tempMap3.put("D8:54:3A:08:42:3F", "10.0.23.1");
+		macIPcollection.put("F4:FC:32:7E:CF:15", tempMap3);
+	}
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +127,7 @@ public class MHIActivity extends Activity {
         setContentView(R.layout.main);
         
         MACList = new HashMap<String, String>();
-        
+        init();
         populateHardCodedList();
         /// Switch on bluetooth device
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter
@@ -47,6 +139,8 @@ public class MHIActivity extends Activity {
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
+		
+		newThread.start();
     }
 
 	private void populateHardCodedList() {
@@ -144,29 +238,22 @@ public class MHIActivity extends Activity {
 		return null;
 
 	}
-    public void onServerClicked(View v) {
-		/// SERVER CODE
+	public void onServerClicked(View v) {
+		// / SERVER CODE
 		// Perform action on clicks
-		if (((ToggleButton) v).isChecked()) {
-			Toast.makeText(MHIActivity.this, "On", Toast.LENGTH_SHORT)
-					.show();
+		 execCommandLine("pand --killall");
+         execCommandLine("killall -9 pand");
+		if (((ToggleButton) v).isChecked() == true) {
 
-			String capture;
-			capture = execCommandLine("pand --listen --role NAP");
-			capture = execCommandLine("netcfg");
+			Toast.makeText(MHIActivity.this, "Starting Server...",
+					Toast.LENGTH_SHORT).show();
 
-			/* added code */
+			execCommandLine("pand --listen --role NAP");
 
-			while (capture.matches("(?i).*bnep.*") == false) {
-				// execCommandLine("pand --listen --role NAP");
-				capture = execCommandLine("netcfg");
-			}
-			execCommandLine("ifconfig bnep0 10.0.1.1 netmask 255.255.255.0 up");
-			execCommandLine("iptables -t nat -A POSTROUTING -o tiwlan0 -j MASQUERADE");
-			execCommandLine("iptables -A FORWARD -i bnep0 -j ACCEPT");
-			execCommandLine("echo 1 > /proc/sys/net/ipv4/ip_forward");
-
-		} 
+			listen = true;
+		} else {
+			listen = false;
+		}
 	}
 	public void onClientClicked(View v) throws InterruptedException{
 		// CLIENT CODE
@@ -215,6 +302,7 @@ public class MHIActivity extends Activity {
 		// Found MAC
 		return returnValue;
 	}
+	/*
 	private void printMACMap() {
 		Iterator<Entry<String, String>> it = MACList.entrySet().iterator();
 		String text="";
@@ -225,7 +313,7 @@ public class MHIActivity extends Activity {
 		TextView tv = new TextView(this);
         tv.setText(text);
         setContentView(tv);
-	}
+	}*/
 	
 	private void populatePairedBTDeviceMACs() {
 		 BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
