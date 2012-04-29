@@ -157,6 +157,7 @@ public class MyAppActivity extends Activity {
 			if(!isGatewayServer)
 			{
 				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
+				serverButton.setChecked(false);
 				serverButton.setEnabled(false);
 			}
 			mDeviceListView.setVisibility(View.INVISIBLE);
@@ -256,7 +257,7 @@ public class MyAppActivity extends Activity {
 		public void onItemClick(AdapterView<?> av, View v, int position,
 				long arg3) {
 			// Cancel discovery because it's costly and we're about to connect
-			// mBtAdapter.cancelDiscovery();
+			mBtAdapter.cancelDiscovery();
 			findViewById(R.id.progressBar1).setVisibility(View.INVISIBLE);
 
 			for (int i = 0; i < av.getChildCount(); i++) {
@@ -320,7 +321,8 @@ public class MyAppActivity extends Activity {
 				serverButton.setEnabled(true);
 				isGatewayServer = false;
 				
-				clientCount = Integer.parseInt(myIP.split(".")[2]);
+				String numbers[] = myIP.split("\\.");
+				clientCount = Integer.parseInt(numbers[2]);
 
 			} catch (IOException e) { // Close the socket
 				try {
@@ -353,7 +355,7 @@ public class MyAppActivity extends Activity {
 
 		execCommandLine("ifconfig bnep0 " + myIP + " netmask 255.255.255.0 up");
 		execCommandLine("route add default gw " + gatewayAddress + " dev bnep0");
-		execCommandLine("setprop net.dns1 " + gatewayAddress);
+		execCommandLine("setprop net.dns1 8.8.8.8");
 		execCommandLine("echo 1 > /proc/sys/net/ipv4/ip_forward");
 	}
 
@@ -366,7 +368,7 @@ public class MyAppActivity extends Activity {
 
 		// If we're already discovering, stop it
 		if (mBtAdapter.isDiscovering()) {
-			// mBtAdapter.cancelDiscovery();
+			mBtAdapter.cancelDiscovery();
 		}
 
 		// Request discover from BluetoothAdapter
@@ -512,7 +514,7 @@ public class MyAppActivity extends Activity {
 
 		// Make sure we're not doing discovery anymore
 		if (mBtAdapter != null) {
-			// mBtAdapter.cancelDiscovery();
+			mBtAdapter.cancelDiscovery();
 		}
 		// Unregister broadcast listeners
 		this.unregisterReceiver(mReceiver);
