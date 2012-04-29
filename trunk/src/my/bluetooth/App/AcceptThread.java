@@ -107,6 +107,19 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 								publishProgress(client);// MyAppActivity.clientCount);
 							}
 						}
+						else if(inpMsg.contains("DISCONNECT") == true){
+							outMsg = "DISCONNECT_ERROR";
+							String clientMac = socket
+									.getRemoteDevice().getAddress();
+							// Clear the mac address in the addressDB.
+							for(int i = 0; i < MyAppActivity.clientCount; ++i){
+								if(MyAppActivity.addressDB[i].clientMacAddr.equalsIgnoreCase(clientMac)){
+									MyAppActivity.addressDB[i].clientMacAddr = "";
+									outMsg = "DISCONNECTED";
+									break;
+								}
+							}
+						}
 
 						tmpOut.write(outMsg.getBytes());
 					} catch (IOException e) {
