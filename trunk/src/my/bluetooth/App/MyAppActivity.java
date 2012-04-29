@@ -67,6 +67,7 @@ public class MyAppActivity extends Activity {
 	public static addressList[] addressDB = new addressList[255];
 
 	private void initializeAddressList() {
+		clientCount = 0;
 		for (int i = 0; i < 255; ++i) {
 			addressDB[i] = new addressList();
 			addressDB[i].ipaddrServ = "10.0." + (i + 1) + ".1";
@@ -251,7 +252,6 @@ public class MyAppActivity extends Activity {
 			return false;
 	}
 
-	// The on-click listener for all devices in the ListViews
 	private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> av, View v, int position,
 				long arg3) {
@@ -319,7 +319,8 @@ public class MyAppActivity extends Activity {
 				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
 				serverButton.setEnabled(true);
 				isGatewayServer = false;
-				clientCount = 1;
+				
+				clientCount = Integer.parseInt(myIP.split(".")[2]);
 
 			} catch (IOException e) { // Close the socket
 				try {
@@ -335,7 +336,6 @@ public class MyAppActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
-
 	};
 
 	private void ConnectToBluetoothServer(String myIP, String gatewayAddress,
@@ -572,8 +572,6 @@ public class MyAppActivity extends Activity {
 								MyAppActivity
 										.execCommandLine("iptables -A FORWARD -i "
 												+ bnepid + " -j ACCEPT");
-								MyAppActivity
-										.execCommandLine("iptables -A FORWARD -i bnep0 -j ACCEPT");
 								MyAppActivity
 										.execCommandLine("echo 1 > /proc/sys/net/ipv4/ip_forward");
 

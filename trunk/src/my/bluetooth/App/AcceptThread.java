@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-
 public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 	private BluetoothServerSocket mmServerSocket = null;
 	private static final String NAME = "BluetoothCommunication";
@@ -23,9 +22,10 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 	private BluetoothAdapter mAdaptor = null;
 	private Context context;
+
 	public AcceptThread(Context context) {
-        this.context = context;
-    }
+		this.context = context;
+	}
 
 	@Override
 	protected Integer doInBackground(String... params) {
@@ -72,7 +72,7 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 						// Check if incoming message is is_server
 						if (inpMsg.contains("IS_SERVER") == true) {
 							if (MyAppActivity.isServer == true) {
-								if(MyAppActivity.isGatewayServer == true)
+								if (MyAppActivity.isGatewayServer == true)
 									outMsg = "SERVER_GATEWAY";
 								else
 									outMsg = "SERVER_INTERMEDIATE";
@@ -97,13 +97,14 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 								// subnet
 								outMsg = MyAppActivity.addressDB[MyAppActivity.clientCount].ipaddrClient
 										+ ":"
-										+ MyAppActivity.addressDB[MyAppActivity.clientCount].gateway;
+										+ MyAppActivity.addressDB[MyAppActivity.clientCount].gateway
+										+ ":";
 								MyAppActivity.addressDB[MyAppActivity.clientCount].clientMacAddr = socket
 										.getRemoteDevice().getAddress();
 								++MyAppActivity.clientCount;
 								Integer[] client = new Integer[1];
-								client[0] = MyAppActivity.clientCount-1;
-								publishProgress(client);//MyAppActivity.clientCount);
+								client[0] = MyAppActivity.clientCount - 1;
+								publishProgress(client);// MyAppActivity.clientCount);
 							}
 						}
 
@@ -118,9 +119,11 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 
 		return null;
 	}
+
 	@Override
-	protected void onProgressUpdate(Integer...clientID){
-		Toast.makeText(context, "Client:"
-                + MyAppActivity.addressDB[clientID[0]].ipaddrClient, Toast.LENGTH_SHORT).show();
+	protected void onProgressUpdate(Integer... clientID) {
+		Toast.makeText(context,
+				"Client:" + MyAppActivity.addressDB[clientID[0]].ipaddrClient,
+				Toast.LENGTH_SHORT).show();
 	}
 }
