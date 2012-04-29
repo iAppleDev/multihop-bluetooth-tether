@@ -122,7 +122,7 @@ public class MyAppActivity extends Activity {
 		}
 
 		oldName = mBtAdapter.getName();
-		mBtAdapter.setName(BNET_DEVICE);
+		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress() );
 
 		execCommandLine("pand --killall");
 		execCommandLine("killall -9 pand");
@@ -151,6 +151,13 @@ public class MyAppActivity extends Activity {
 			pListThread.start();
 
 		} else {
+			execCommandLine("pand --killall");
+			execCommandLine("killall -9 pand");
+			if(!isGatewayServer)
+			{
+				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
+				serverButton.setEnabled(false);
+			}
 			mDeviceListView.setVisibility(View.INVISIBLE);
 			findViewById(R.id.title_all_devices).setVisibility(View.INVISIBLE);
 		}
@@ -187,8 +194,10 @@ public class MyAppActivity extends Activity {
 			tmpIn.read(buffer);
 			msg = new String(buffer);
 			mmSocket.close();
-			if (msg.contains("I_AM_SERVER"))
+			if (msg.contains("SERVER_GATEWAY"))
 				return "Server";
+			else if(msg.contains("SERVER_INTERMEDIATE"))
+				return "Intermediate Server";
 			else
 				return "Client";
 		} catch (IOException e) {
@@ -310,6 +319,7 @@ public class MyAppActivity extends Activity {
 				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
 				serverButton.setEnabled(true);
 				isGatewayServer = false;
+				clientCount = 1;
 
 			} catch (IOException e) { // Close the socket
 				try {
@@ -381,8 +391,7 @@ public class MyAppActivity extends Activity {
 						listEntry.append("Name: ");
 						listEntry.append(device.getName());
 						listEntry.append("\nStatus: ");
-						// String status = getStatus(device.getAddress());
-						String status = null;
+						String status = getStatus(device.getAddress());
 						status = status == null ? "Not Paired" : status;
 						listEntry.append(status);
 						listEntry.append("\nMAC ID: ");
