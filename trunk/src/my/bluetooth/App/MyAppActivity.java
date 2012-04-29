@@ -51,6 +51,7 @@ public class MyAppActivity extends Activity {
 	public static final String NETMASK = "255.255.255.0";
 	// private AsyncTask<String, Integer, Integer> mAcceptThread;
 	AcceptThread mAcceptThread;
+	String mServerAddress = null;
 	public static boolean isServer = false;
 	public static boolean isGatewayServer = false;
 	private static boolean setupOnGoing = false;
@@ -60,6 +61,7 @@ public class MyAppActivity extends Activity {
 		String ipaddrServ;
 		String ipaddrClient;
 		String gateway;
+		String netmask;
 		String clientMacAddr;
 	}
 
@@ -71,6 +73,7 @@ public class MyAppActivity extends Activity {
 			addressDB[i] = new addressList();
 			addressDB[i].ipaddrServ = "10.0." + (i + 1) + ".1";
 			addressDB[i].ipaddrClient = "10.0." + (i + 1) + ".2";
+			addressDB[i].netmask = "255.255.255.0";
 			addressDB[i].gateway = addressDB[i].ipaddrServ;
 			addressDB[i].clientMacAddr = "";
 		}
@@ -121,7 +124,7 @@ public class MyAppActivity extends Activity {
 		}
 
 		oldName = mBtAdapter.getName();
-		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress() );
+		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
 
 		execCommandLine("pand --killall");
 		execCommandLine("killall -9 pand");
@@ -130,7 +133,7 @@ public class MyAppActivity extends Activity {
 		ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
 		isGatewayServer = isOnline();
 		serverButton.setEnabled(isGatewayServer);
-		
+
 		mAcceptThread = (AcceptThread) new AcceptThread(this).execute();
 	}
 
@@ -152,12 +155,36 @@ public class MyAppActivity extends Activity {
 		} else {
 			execCommandLine("pand --killall");
 			execCommandLine("killall -9 pand");
-			if(!isGatewayServer)
-			{
+			try {
+				if (mServerAddress != null) {
+					BluetoothDevice device = mBtAdapter
+							.getRemoteDevice(mServerAddress);
+					BluetoothSocket mmSocket = device
+							.createRfcommSocketToServiceRecord(MY_UUID);
+					
+					OutputStream tmpOut = null;
+					tmpOut = mmSocket.getOutputStream();
+					mmSocket = null;
+
+					mmSocket = device
+							.createRfcommSocketToServiceRecord(MY_UUID);
+
+					mmSocket.connect();
+					tmpOut = mmSocket.getOutputStream();
+					String msg = new String("DISCONNECT");
+					tmpOut.write(msg.getBytes());
+					mmSocket.close();
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (!isGatewayServer) {
 				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
 				serverButton.setChecked(false);
 				serverButton.setEnabled(false);
 			}
+			mServerAddress = null;
 			mDeviceListView.setVisibility(View.INVISIBLE);
 			findViewById(R.id.title_all_devices).setVisibility(View.INVISIBLE);
 		}
@@ -196,7 +223,7 @@ public class MyAppActivity extends Activity {
 			mmSocket.close();
 			if (msg.contains("SERVER_GATEWAY"))
 				return "Server";
-			else if(msg.contains("SERVER_INTERMEDIATE"))
+			else if (msg.contains("SERVER_INTERMEDIATE"))
 				return "Intermediate Server";
 			else
 				return "Client";
@@ -231,20 +258,14 @@ public class MyAppActivity extends Activity {
 		} else {
 			initializeAddressList();
 			isServer = false;
-			if(isGatewayServer == true)
-			{
-				execCommandLine("pand --killall");
-				execCommandLine("killall -9 pand");
-			}
+			execCommandLine("pand --killall");
+			execCommandLine("killall -9 pand");
 			// mServeThread.cancel(true);
 		}
 	}
 
 	public void onExitClicked(View v) {
 		mBtAdapter.setName(oldName);
-		initializeAddressList();
-		execCommandLine("pand --killall");
-		execCommandLine("killall -9 pand");
 		finish();
 	}
 
@@ -279,7 +300,7 @@ public class MyAppActivity extends Activity {
 			// View
 			String info = ((TextView) v).getText().toString();
 			String address = info.substring(info.length() - 17);
-
+			mServerAddress = address;
 			BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
 			Toast.makeText(MyAppActivity.this, "Connecting to..." + address,
 					Toast.LENGTH_SHORT).show();
@@ -320,11 +341,11 @@ public class MyAppActivity extends Activity {
 				msg = new String("CONNECTED");
 				tmpOut.write(msg.getBytes());
 				mmSocket.close();
-				
+
 				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
 				serverButton.setEnabled(true);
 				isGatewayServer = false;
-				
+
 				String numbers[] = myIP.split("\\.");
 				clientCount = Integer.parseInt(numbers[2]);
 
