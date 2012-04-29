@@ -37,7 +37,7 @@ public class MyAppActivity extends Activity {
 	private static final UUID MY_UUID = UUID
 			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 	private static final int REQUEST_ENABLE_BT = 1;
-	private static final String BNET_DEVICE = "BNET Device";
+	private static final String BNET_DEVICE = "BNET_Device";
 
 	private String oldName = null;
 	// Member fields
@@ -61,6 +61,7 @@ public class MyAppActivity extends Activity {
 		String ipaddrServ;
 		String ipaddrClient;
 		String gateway;
+		String netmask;
 		String clientMacAddr;
 	}
 
@@ -72,6 +73,7 @@ public class MyAppActivity extends Activity {
 			addressDB[i] = new addressList();
 			addressDB[i].ipaddrServ = "10.0." + (i + 1) + ".1";
 			addressDB[i].ipaddrClient = "10.0." + (i + 1) + ".2";
+			addressDB[i].netmask = "255.255.255.0";
 			addressDB[i].gateway = addressDB[i].ipaddrServ;
 			addressDB[i].clientMacAddr = "";
 		}
@@ -85,8 +87,17 @@ public class MyAppActivity extends Activity {
 		}
 		return null;
 	}
+	
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
+    }
 
-	/** Called when the activity is first created. */
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -123,7 +134,7 @@ public class MyAppActivity extends Activity {
 
 		oldName = mBtAdapter.getName();
 		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
-
+		setTitle(getTitle() + " " + mBtAdapter.getAddress());
 		execCommandLine("pand --killall");
 		execCommandLine("killall -9 pand");
 		initializeAddressList();
@@ -135,13 +146,28 @@ public class MyAppActivity extends Activity {
 		mAcceptThread = (AcceptThread) new AcceptThread(this).execute();
 	}
 
+    private void ensureDiscoverable() {
+        if (mBtAdapter.getScanMode() !=
+            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 900);
+            startActivity(discoverableIntent);
+        }
+    }
+    
+    public void onMDClicked(View v) {
+    	ensureDiscoverable();
+    }
+	
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+    }
+    
 	public void onClientClicked(View v) {
 		mDevicesArrayAdapter.clear();
 		if (((ToggleButton) v).isChecked()) {
 			mDeviceListView.setVisibility(View.VISIBLE);
-			// Get a set of currently paired devices
-			// Set<BluetoothDevice> pairedDevices =
-			// mBtAdapter.getBondedDevices();
 
 			findViewById(R.id.progressBar1).setVisibility(View.VISIBLE);
 
@@ -244,11 +270,13 @@ public class MyAppActivity extends Activity {
 			Toast.makeText(MyAppActivity.this, "Starting Server...",
 					Toast.LENGTH_SHORT).show();
 
-			Intent discoverableIntent = new Intent(
+/*			Intent discoverableIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 			discoverableIntent.putExtra(
-					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivity(discoverableIntent);
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 900);
+			startActivity(discoverableIntent);*/
+			
+			ensureDiscoverable();
 
 			execCommandLine("pand --listen --role NAP");
 
@@ -256,20 +284,14 @@ public class MyAppActivity extends Activity {
 		} else {
 			initializeAddressList();
 			isServer = false;
-			if(isGatewayServer == true)
-			{
-				execCommandLine("pand --killall");
-				execCommandLine("killall -9 pand");
-			}
+			execCommandLine("pand --killall");
+			execCommandLine("killall -9 pand");
 			// mServeThread.cancel(true);
 		}
 	}
 
 	public void onExitClicked(View v) {
 		mBtAdapter.setName(oldName);
-		initializeAddressList();
-		execCommandLine("pand --killall");
-		execCommandLine("killall -9 pand");
 		finish();
 	}
 
@@ -390,7 +412,11 @@ public class MyAppActivity extends Activity {
 
 	private void doDiscovery() {
 		// Indicate scanning in the title
-		setTitle(R.string.scanning);
+		//setTitle(R.string.scanning);
+		
+		Toast.makeText(MyAppActivity.this, R.string.scanning,
+				Toast.LENGTH_SHORT).show();
+
 
 		// Turn on sub-title for new devices
 		findViewById(R.id.title_all_devices).setVisibility(View.VISIBLE);
@@ -549,6 +575,19 @@ public class MyAppActivity extends Activity {
 		this.unregisterReceiver(mReceiver);
 	}
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+        case REQUEST_ENABLE_BT:
+            // When the request to enable Bluetooth returns
+            if (resultCode != Activity.RESULT_OK) {
+                // User did not enable Bluetooth or an error occured
+                Toast.makeText(this, "BlueTooth is disabled, quitting application", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+	
+	
 	public static String setUpbnep(String clientMac) {
 		String outMsg;
 		if (setupOnGoing == true) {
