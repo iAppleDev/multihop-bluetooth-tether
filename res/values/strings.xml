@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, WirelessActivity!</string>
-    <string name="app_name">Wireless</string>
-    <string name="ToggleButton">Server</string>
+    <string name="hello">Hello World, MyAppActivity!</string>
+    <string name="app_name">BlueNET</string>
+    <string name="title_device_list">Device List</string>
+    <string name="title_other_devices">Other Devices</string>
+    <string name="button_scan">Scan for Devices</string>
+    <string name="scanning">Scanning for devices</string>
+    <string name="none_paired">No paired devices found</string>
+    <string name="none_found">No devices found</string>
+    <string name="select_device">Select a device</string>
+    <string name="toggleBtn_server">Server</string>
+    <string name="toggleBtn_Client">Client</string>
 
 </resources>
