@@ -11,7 +11,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
+import android.widget.TextView;
 
 public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 	private BluetoothServerSocket mmServerSocket = null;
@@ -21,10 +21,13 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 	private static final UUID MY_UUID = UUID
 			.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 	private BluetoothAdapter mAdaptor = null;
-	private Context context;
+	private TextView tv;
 
-	public AcceptThread(Context context) {
-		this.context = context;
+	private Integer[] param;
+
+	public AcceptThread(Context context, TextView tv) {
+
+		this.tv = tv;
 	}
 
 	@Override
@@ -38,7 +41,7 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 		} catch (IOException e) {
 			Log.e(TAG, "listen() failed", e);
 		}
-
+		
 		BluetoothSocket socket = null;
 		// Listen to the server socket if we're not connected
 		while (true) {
@@ -80,6 +83,29 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 								outMsg = "NOT_SERVER";
 							}
 						}
+						else if(inpMsg.contains("DISCONNECT") == true){
+							outMsg = "DISCONNECT_ERROR";
+							String clientMac = socket
+									.getRemoteDevice().getAddress();
+							// Clear the mac address in the addressDB.
+							for(int i = 0; i < 255; ++i){
+								if(MyAppActivity.addressDB[i].used == true && MyAppActivity.addressDB[i].clientMacAddr.equalsIgnoreCase(clientMac)){
+									String list[] = MyAppActivity.connectedList.split("\n");
+									MyAppActivity.connectedList="";
+									for(int j=0; j < list.length; ++j){
+										if(list[j].contains(clientMac) == false)
+										{
+											MyAppActivity.connectedList += list[j] + "\n";
+										}
+									}
+									MyAppActivity.addressDB[i].clientMacAddr = "";
+									MyAppActivity.addressDB[i].used = false;
+									outMsg = "DISCONNECTED";
+									publishProgress(param);
+									break;
+								}
+							}
+						}
 						// If incoming message is CONNECTED, a bnep interface is
 						// up. Set it's ip address
 						else if (inpMsg.contains("CONNECTED")) {
@@ -95,31 +121,23 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 							} else {
 								// Read from table and give the IP address
 								// subnet
-								outMsg = MyAppActivity.addressDB[MyAppActivity.clientCount].ipaddrClient
-										+ ":"
-										+ MyAppActivity.addressDB[MyAppActivity.clientCount].gateway
-										+ ":";
-								MyAppActivity.addressDB[MyAppActivity.clientCount].clientMacAddr = socket
-										.getRemoteDevice().getAddress();
-								++MyAppActivity.clientCount;
-								Integer[] client = new Integer[1];
-								client[0] = MyAppActivity.clientCount - 1;
-								publishProgress(client);// MyAppActivity.clientCount);
-							}
-						}
-						else if(inpMsg.contains("DISCONNECT") == true){
-							outMsg = "DISCONNECT_ERROR";
-							String clientMac = socket
-									.getRemoteDevice().getAddress();
-							// Clear the mac address in the addressDB.
-							for(int i = 0; i < MyAppActivity.clientCount; ++i){
-								if(MyAppActivity.addressDB[i].clientMacAddr.equalsIgnoreCase(clientMac)){
-									MyAppActivity.addressDB[i].clientMacAddr = "";
-									outMsg = "DISCONNECTED";
-									break;
+								for (int i = 0; i < 255; ++i) {
+									if (MyAppActivity.addressDB[i].used == false) {
+										outMsg = MyAppActivity.addressDB[i].ipaddrClient
+												+ ":"
+												+ MyAppActivity.addressDB[i].gateway
+												+ ":";
+										MyAppActivity.addressDB[i].clientMacAddr = socket
+												.getRemoteDevice().getAddress();
+										MyAppActivity.addressDB[i].used = true;
+										MyAppActivity.connectedList += "Client<IP><MAC>: <"+ MyAppActivity.addressDB[i].ipaddrClient+"><"+MyAppActivity.addressDB[i].clientMacAddr+ ">\n";
+										publishProgress(param);
+										break;
+									}
 								}
 							}
 						}
+
 
 						tmpOut.write(outMsg.getBytes());
 					} catch (IOException e) {
@@ -134,9 +152,8 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 	}
 
 	@Override
-	protected void onProgressUpdate(Integer... clientID) {
-		Toast.makeText(context,
-				"Client:" + MyAppActivity.addressDB[clientID[0]].ipaddrClient,
-				Toast.LENGTH_SHORT).show();
+	protected void onProgressUpdate(Integer... param) {
+	       tv.setText(MyAppActivity.myInfo+"State:"+MyAppActivity.state+"========================\n"+MyAppActivity.connectedList);
+		
 	}
 }

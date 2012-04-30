@@ -88,6 +88,16 @@
         android:text="@string/title_device_list"
         android:textColor="#fff"
         android:visibility="gone" />
+    
+    <TextView
+        android:id="@+id/status_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#666"
+        android:paddingLeft="5dp"
+        android:text="@string/net_status"
+        android:textColor="#fff"
+        android:visibility="visible" />
 
 
     <ListView

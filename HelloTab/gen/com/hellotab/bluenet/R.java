@@ -20,11 +20,12 @@ public final class R {
     public static final class id {
         public static final int ProgressBar01=0x7f050003;
         public static final int ScrollView01=0x7f050000;
-        public static final int all_devices=0x7f05000b;
+        public static final int all_devices=0x7f05000c;
         public static final int button1=0x7f050008;
         public static final int progressBar1=0x7f050007;
         public static final int progressBar2=0x7f050005;
         public static final int progressBar3=0x7f050009;
+        public static final int status_info=0x7f05000b;
         public static final int tableLayoutCtrlPanel=0x7f050001;
         public static final int tableRowCtrlPanel=0x7f050002;
         public static final int title_all_devices=0x7f05000a;
@@ -45,6 +46,7 @@ public final class R {
         public static final int entertainmentcheck=0x7f04000b;
         public static final int hello=0x7f04000f;
         public static final int keyword=0x7f040008;
+        public static final int net_status=0x7f04001a;
         public static final int news=0x7f04000e;
         public static final int newscheck=0x7f040007;
         public static final int none_found=0x7f040016;
