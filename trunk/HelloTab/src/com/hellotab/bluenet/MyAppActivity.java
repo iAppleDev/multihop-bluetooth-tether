@@ -115,33 +115,36 @@ public class MyAppActivity extends Activity {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		}
-
-		oldName = mBtAdapter.getName();
-		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
-
-		execCommandLine("pand --killall");
-		execCommandLine("killall -9 pand");
-		initializeAddressList();
-
-		ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
-		isGatewayServer = isOnline();
-
-		serverButton.setEnabled(isGatewayServer);
-
-		updateTextView();
-		mAcceptThread = (AcceptThread) new AcceptThread(this, tv).execute();
-		
-		mStartRX = TrafficStats.getTotalRxBytes();
-		mStartTX = TrafficStats.getTotalTxBytes();
-		if (mStartRX == TrafficStats.UNSUPPORTED || mStartTX == TrafficStats.UNSUPPORTED) {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			alert.setTitle("Uh Oh!");
-			alert.setMessage("Your device does not support traffic stat monitoring.");
-			alert.show();
 		} else {
-			mHandler.postDelayed(mRunnable, 1000);
+			myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() + "\n";
+			oldName = mBtAdapter.getName();
+			mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
+
+			execCommandLine("pand --killall");
+			execCommandLine("killall -9 pand");
+			initializeAddressList();
+
+			ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
+			isGatewayServer = isOnline();
+
+			serverButton.setEnabled(isGatewayServer);
+
+			updateTextView();
+			mAcceptThread = (AcceptThread) new AcceptThread(this, tv).execute();
+
+			mStartRX = TrafficStats.getTotalRxBytes();
+			mStartTX = TrafficStats.getTotalTxBytes();
+			if (mStartRX == TrafficStats.UNSUPPORTED
+					|| mStartTX == TrafficStats.UNSUPPORTED) {
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+				alert.setTitle("Uh Oh!");
+				alert.setMessage("Your device does not support traffic stat monitoring.");
+				alert.show();
+			} else {
+				mHandler.postDelayed(mRunnable, 1000);
+			}
 		}
+
 	}
 
 	private final Runnable mRunnable = new Runnable() {
@@ -373,13 +376,14 @@ public class MyAppActivity extends Activity {
 				// Attempt to connect to the device
 				Toast.makeText(this, "Connecting to:  " + device.getAddress(),
 						Toast.LENGTH_SHORT).show();
-				
+
 				mServerAddress = address;
 				BluetoothSocket mmSocket = null;
 
 				// Make a connection to the BluetoothSocket
 				try {
-					mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+					mmSocket = device
+							.createRfcommSocketToServiceRecord(MY_UUID);
 					mmSocket.connect();
 					InputStream tmpIn = null;
 					OutputStream tmpOut = null;
@@ -404,7 +408,8 @@ public class MyAppActivity extends Activity {
 					mmSocket.close();
 					mmSocket = null;
 
-					mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+					mmSocket = device
+							.createRfcommSocketToServiceRecord(MY_UUID);
 
 					mmSocket.connect();
 					tmpIn = mmSocket.getInputStream();
@@ -419,16 +424,20 @@ public class MyAppActivity extends Activity {
 
 					String numbers[] = myIP.split("\\.");
 					int index = Integer.parseInt(numbers[2]);
-					myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() +
-							" IP:" + myIP + "\nConnected to:"+gatewayAddress+"\nMac: "+mmSocket.getRemoteDevice().getAddress()+"\n";
+					myInfo = "My Info:\nMac: " + mBtAdapter.getAddress()
+							+ " IP:" + myIP + "\nConnected to:"
+							+ gatewayAddress + "\nMac: "
+							+ mmSocket.getRemoteDevice().getAddress() + "\n";
 					addressDB[index - 1].used = true;
 					state = "CLIENT\n";
 					updateTextView();
 					// Update network topology
-					HelloTabActivity.netMap[0][0] = HelloTabActivity.netMap[1][1]= 0;
+					HelloTabActivity.netMap[0][0] = HelloTabActivity.netMap[1][1] = 0;
 					HelloTabActivity.count++;
-					HelloTabActivity.netMap_List.put(mmSocket.getRemoteDevice().getAddress(),0);
-					HelloTabActivity.netMap_List.put(mBtAdapter.getAddress(),1);
+					HelloTabActivity.netMap_List.put(mmSocket.getRemoteDevice()
+							.getAddress(), 0);
+					HelloTabActivity.netMap_List
+							.put(mBtAdapter.getAddress(), 1);
 					HelloTabActivity.netMap[0][1] = HelloTabActivity.netMap[1][0] = 1;
 					HelloTabActivity.count++;
 
@@ -455,7 +464,37 @@ public class MyAppActivity extends Activity {
 						"BlueTooth is disabled, quitting application",
 						Toast.LENGTH_SHORT).show();
 				finish();
+			} else {
+				myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() + "\n";
+				oldName = mBtAdapter.getName();
+				mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
+
+				execCommandLine("pand --killall");
+				execCommandLine("killall -9 pand");
+				initializeAddressList();
+
+				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
+				isGatewayServer = isOnline();
+
+				serverButton.setEnabled(isGatewayServer);
+
+				updateTextView();
+				mAcceptThread = (AcceptThread) new AcceptThread(this, tv)
+						.execute();
+
+				mStartRX = TrafficStats.getTotalRxBytes();
+				mStartTX = TrafficStats.getTotalTxBytes();
+				if (mStartRX == TrafficStats.UNSUPPORTED
+						|| mStartTX == TrafficStats.UNSUPPORTED) {
+					AlertDialog.Builder alert = new AlertDialog.Builder(this);
+					alert.setTitle("Uh Oh!");
+					alert.setMessage("Your device does not support traffic stat monitoring.");
+					alert.show();
+				} else {
+					mHandler.postDelayed(mRunnable, 1000);
+				}
 			}
+
 		}
 	}
 
