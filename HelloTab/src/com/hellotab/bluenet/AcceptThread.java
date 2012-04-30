@@ -132,12 +132,40 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 										MyAppActivity.addressDB[i].used = true;
 										MyAppActivity.connectedList += MyAppActivity.addressDB[i].ipaddrClient+" - "+ MyAppActivity.addressDB[i].clientMacAddr+ "\n";
 										publishProgress(param);
+										
+										// Update network matrix
+										HelloTabActivity.netMap_List.put( MyAppActivity.addressDB[i].clientMacAddr,HelloTabActivity.count);
+										HelloTabActivity.netMap[1][HelloTabActivity.count] = HelloTabActivity.netMap[HelloTabActivity.count][1] = 1;
+										HelloTabActivity.count++;
+										/*
+										// Propagate message to server
+										BluetoothSocket mmSocket = null;
+										BluetoothDevice device =  mAdaptor.getRemoteDevice(MyAppActivity.mServerAddress);
+										// Make a connection to the BluetoothSocket
+											mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+											mmSocket.connect();
+											OutputStream writeOut = null;
+											writeOut = mmSocket.getOutputStream();
+											// Read from the InputStream
+											String msg = "PROPAGATE_NETINFO-"+MyAppActivity.addressDB[i].clientMacAddr+"-";
+											writeOut.write(msg.getBytes());
+											writeOut.close();
+											mmSocket.close();*/
 										break;
 									}
 								}
 							}
 						}
-
+						/*
+						// If input message is PROPAGATE_NETINFO
+						else if(inpMsg.contains("PROPAGATE_NETINFO"))
+						{
+							String clientAdaptorMac = socket.getRemoteDevice().getAddress();
+							Integer key = HelloTabActivity.netMap_List.get(clientAdaptorMac);
+							String propagatedMacs[] = inpMsg.split("-");
+							HelloTabActivity.netMap_List.put(propagatedMacs[1], HelloTabActivity.count);
+							
+						}*/
 
 						tmpOut.write(outMsg.getBytes());
 					} catch (IOException e) {
