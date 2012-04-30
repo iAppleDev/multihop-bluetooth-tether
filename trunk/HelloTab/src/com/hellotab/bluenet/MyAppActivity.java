@@ -44,6 +44,8 @@ public class MyAppActivity extends Activity {
 	private ArrayAdapter<String> mDevicesArrayAdapter;
 	private ListView mDeviceListView;
 
+	private TextView tv;
+	
 	private ArrayList<String> pairedDeviceList = new ArrayList<String>();
 	private boolean listPopulated = false;
 
@@ -54,31 +56,35 @@ public class MyAppActivity extends Activity {
 	public static boolean isServer = false;
 	public static boolean isGatewayServer = false;
 	private static boolean setupOnGoing = false;
-	public static int clientCount = 0;
+	
+	public static String myInfo;
+	public static String connectedList;
+	public static String state;
 
 	public class addressList {
 		String ipaddrServ;
 		String ipaddrClient;
 		String gateway;
 		String clientMacAddr;
+		boolean used;
 	}
 
 	public static addressList[] addressDB = new addressList[255];
 
 	private void initializeAddressList() {
-		clientCount = 0;
 		for (int i = 0; i < 255; ++i) {
 			addressDB[i] = new addressList();
 			addressDB[i].ipaddrServ = "10.0." + (i + 1) + ".1";
 			addressDB[i].ipaddrClient = "10.0." + (i + 1) + ".2";
 			addressDB[i].gateway = addressDB[i].ipaddrServ;
 			addressDB[i].clientMacAddr = "";
+			addressDB[i].used = false;
 		}
 	}
 	
 	public static String getServerIPAddress(String clientMACAddr) {
-		for (int i = 0; i < clientCount; ++i) {
-			if (clientMACAddr.equalsIgnoreCase(addressDB[i].clientMacAddr)) {
+		for (int i = 0; i < 255; ++i) {
+			if (addressDB[i].used == true && clientMACAddr.equalsIgnoreCase(addressDB[i].clientMacAddr)) {
 				return addressDB[i].ipaddrServ;
 			}
 		}
@@ -88,11 +94,6 @@ public class MyAppActivity extends Activity {
 	int i = 0;
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toast.makeText(this, "A", Toast.LENGTH_LONG).show();
-        /*TextView textview = new TextView(this);
-        textview.setText("This is the First tab ");
-        setContentView(textview);
-        */
              
         setContentView(R.layout.first);
         
@@ -102,12 +103,16 @@ public class MyAppActivity extends Activity {
 				R.layout.device_name);
    
 		// Find and set up the ListView for paired devices
-		mDeviceListView = (ListView) findViewById(R.id.all_devices);
+		/*mDeviceListView = (ListView) findViewById(R.id.all_devices);
 		mDeviceListView.setAdapter(mDevicesArrayAdapter);
 		mDeviceListView.setOnItemClickListener(mDeviceClickListener);
 		mDeviceListView.setVisibility(View.INVISIBLE);
-
+*/
 		findViewById(R.id.progressBar1).setVisibility(View.INVISIBLE);
+
+		tv = (TextView) findViewById(R.id.status_info);
+		state = "NONE\n";
+		connectedList = "List of connected clients:\n========================\n";
 
 		// Register for broadcasts when a device is discovered
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -119,6 +124,7 @@ public class MyAppActivity extends Activity {
 
 		// Get the local Bluetooth adapter
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+		myInfo = "My Mac:"+mBtAdapter.getAddress()+"\n";
 		if (!mBtAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -134,13 +140,19 @@ public class MyAppActivity extends Activity {
 
 		ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
 		isGatewayServer = isOnline();
+
 		serverButton.setEnabled(isGatewayServer);
 
-		mAcceptThread = (AcceptThread) new AcceptThread(this).execute();
-                      
+		updateTextView();
+		mAcceptThread = (AcceptThread) new AcceptThread(this, tv).execute();
+             
     }
 	
-    @Override
+    private void updateTextView() {
+    	tv.setText(MyAppActivity.myInfo+"State:"+MyAppActivity.state+"========================\n"+MyAppActivity.connectedList);
+	}
+
+	@Override
     public synchronized void onPause() {
         super.onPause();
     }
@@ -272,6 +284,7 @@ public class MyAppActivity extends Activity {
 			mServerAddress = null;
 			mDeviceListView.setVisibility(View.INVISIBLE);
 			findViewById(R.id.title_all_devices).setVisibility(View.INVISIBLE);
+			state= "NONE\n";
 		}
 	}
 
@@ -336,6 +349,16 @@ public class MyAppActivity extends Activity {
 			execCommandLine("pand --listen --role NAP");
 
 			isServer = true;
+			if(isGatewayServer == true)
+			{
+				state = "GATEWAY SERVER\n";
+				updateTextView();
+			}
+			else
+			{
+				state = "INTERMEDIATE SERVER\n";
+				updateTextView();
+			}
 		} else {
 			initializeAddressList();
 			isServer = false;
@@ -344,6 +367,8 @@ public class MyAppActivity extends Activity {
 				execCommandLine("pand --killall");
 				execCommandLine("killall -9 pand");
 			}
+			connectedList = "List of connected clients:\n======================\n";
+			updateTextView();
 			// mServeThread.cancel(true);
 		}
 	}
@@ -434,7 +459,11 @@ public class MyAppActivity extends Activity {
 				isGatewayServer = false;
 
 				String numbers[] = myIP.split("\\.");
-				clientCount = Integer.parseInt(numbers[2]);
+				int index = Integer.parseInt(numbers[2]);
+				myInfo = "MyMAC:"+mBtAdapter.getAddress() + "\n"+"My Primary IP:"+myIP+"\n===================\n";
+				addressDB[index-1].used = true;
+				state = "CLIENT\n";
+				updateTextView();
 
 			} catch (IOException e) { // Close the socket
 				try {
@@ -677,6 +706,5 @@ public class MyAppActivity extends Activity {
 		outMsg = "DONE_CONNECTED";
 		return outMsg;
 	}
-	
 	
 }
