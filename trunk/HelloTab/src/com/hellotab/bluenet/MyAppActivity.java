@@ -279,7 +279,9 @@ public class MyAppActivity extends Activity {
 				serverButton.setEnabled(false);
 			}
 			mServerAddress = null;
+			myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() + "\n";
 			state = "NONE\n";
+			connectedList="Connected clients:\n";
 			updateTextView();
 		}
 	}
@@ -418,7 +420,7 @@ public class MyAppActivity extends Activity {
 					String numbers[] = myIP.split("\\.");
 					int index = Integer.parseInt(numbers[2]);
 					myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() +
-							" IP:" + myIP + "\nConnected to:"+gatewayAddress+" Mac: "+mmSocket.getRemoteDevice().getAddress()+"\n";
+							" IP:" + myIP + "\nConnected to:"+gatewayAddress+"\nMac: "+mmSocket.getRemoteDevice().getAddress()+"\n";
 					addressDB[index - 1].used = true;
 					state = "CLIENT\n";
 					updateTextView();
