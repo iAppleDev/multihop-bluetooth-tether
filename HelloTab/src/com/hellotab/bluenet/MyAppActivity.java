@@ -99,11 +99,11 @@ public class MyAppActivity extends Activity {
 
 		tv = (TextView) findViewById(R.id.status_info);
 		state = "NONE\n";
-		connectedList = "List of connected clients:\n========================\n";
+		connectedList = "Connected clients:\n";
 
 		// Get the local Bluetooth adapter
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-		myInfo = "My Mac:" + mBtAdapter.getAddress() + "\n";
+		myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() + "\n";
 		if (!mBtAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -127,8 +127,8 @@ public class MyAppActivity extends Activity {
 	}
 
 	private void updateTextView() {
-		tv.setText(MyAppActivity.myInfo + "State:" + MyAppActivity.state
-				+ "========================\n" + MyAppActivity.connectedList);
+		tv.setText(MyAppActivity.myInfo + "State: " + MyAppActivity.state
+				+"\n"+ MyAppActivity.connectedList);
 	}
 
 	@Override
@@ -280,7 +280,11 @@ public class MyAppActivity extends Activity {
 				execCommandLine("killall -9 pand");
 				state = "NONE\n";
 			}
-			connectedList = "List of connected clients:\n========================\n";
+			else
+			{
+				state = "CLIENT\n";
+			}
+			connectedList = "Connected clients:\n";
 			updateTextView();
 			// mServeThread.cancel(true);
 		}
@@ -295,95 +299,6 @@ public class MyAppActivity extends Activity {
 			return false;
 	}
 
-/*	private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
-		public void onItemClick(AdapterView<?> av, View v, int position,
-				long arg3) {
-			// Cancel discovery because it's costly and we're about to connect
-			mBtAdapter.cancelDiscovery();
-
-			for (int i = 0; i < av.getChildCount(); i++) {
-				if (i == position) {
-					av.getChildAt(i).setBackgroundDrawable(
-							getResources().getDrawable(R.drawable.untitled));
-					((TextView) av.getChildAt(i)).setTextColor(Color.BLACK);
-				} else {
-					av.getChildAt(i).setBackgroundColor(Color.BLACK);
-					((TextView) av.getChildAt(i)).setTextColor(Color.WHITE);
-				}
-			}
-
-			// Get the device MAC address, which is the last 17 chars in the
-			// View
-			String info = ((TextView) v).getText().toString();
-			String address = info.substring(info.length() - 17);
-			mServerAddress = address;
-			BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
-			Toast.makeText(MyAppActivity.this, "Connecting to..." + address,
-					Toast.LENGTH_SHORT).show();
-			BluetoothSocket mmSocket = null;
-
-			// Make a connection to the BluetoothSocket
-			try {
-				mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-				mmSocket.connect();
-				InputStream tmpIn = null;
-				OutputStream tmpOut = null;
-
-				tmpIn = mmSocket.getInputStream();
-				tmpOut = mmSocket.getOutputStream();
-
-				byte[] buffer = new byte[1024];
-
-				// Read from the InputStream
-				String msg = "CONNECT";
-				tmpOut.write(msg.getBytes());
-				tmpIn.read(buffer);
-				msg = new String(buffer);
-
-				// todo:
-				String ipAddresses[] = msg.split(":");
-				String myIP = ipAddresses[0];
-				String gatewayAddress = ipAddresses[1];
-				ConnectToBluetoothServer(myIP, gatewayAddress, address);
-
-				mmSocket.close();
-				mmSocket = null;
-
-				mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-
-				mmSocket.connect();
-				tmpIn = mmSocket.getInputStream();
-				tmpOut = mmSocket.getOutputStream();
-				msg = new String("CONNECTED");
-				tmpOut.write(msg.getBytes());
-				mmSocket.close();
-
-				ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
-				serverButton.setEnabled(true);
-				isGatewayServer = false;
-
-				String numbers[] = myIP.split("\\.");
-				int index = Integer.parseInt(numbers[2]);
-				myInfo = "MyMAC:" + mBtAdapter.getAddress() + "\n"
-						+ "My Primary IP:" + myIP + "\n===================\n";
-				addressDB[index - 1].used = true;
-				state = "CLIENT\n";
-				updateTextView();
-
-			} catch (IOException e) { // Close the socket
-				try {
-					mmSocket.close();
-				} catch (IOException e2) {
-					System.out
-							.println("unable to close() socket during connection failure :");
-					e2.printStackTrace();
-				}
-				return;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	};*/
 
 	private void ConnectToBluetoothServer(String myIP, String gatewayAddress,
 			String serverMACAddress) throws InterruptedException {
@@ -472,8 +387,8 @@ public class MyAppActivity extends Activity {
 
 					String numbers[] = myIP.split("\\.");
 					int index = Integer.parseInt(numbers[2]);
-					myInfo = "MyMAC:" + mBtAdapter.getAddress() + "\n"
-							+ "My Primary IP:" + myIP + "\n===================\n";
+					myInfo = "My Info:\nMac: " + mBtAdapter.getAddress() +
+							" IP:" + myIP + "\nConnected to:"+gatewayAddress+" Mac: "+mmSocket.getRemoteDevice().getAddress()+"\n";
 					addressDB[index - 1].used = true;
 					state = "CLIENT\n";
 					updateTextView();
