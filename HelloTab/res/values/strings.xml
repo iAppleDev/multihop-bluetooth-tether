@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="server">Server</string>
+    <string name="client">Client</string>
+	<string name="personname">Username</string>
+	<string name="password">Password</string>
+	<string name="sipuri">Client SIP URI</string>
+	<string name="url1">Enter URL1</string>
+	<string name="url2">Enter URL2</string>
+	<string name="newscheck">News</string>
+	<string name="keyword">Keyword</string>
+	<string name="sportscheck">Sports</string>
+	<string name="sciencecheck">Science</string>
+	<string name="entertainmentcheck">Entertainment</string>
+	<string name="register">Register</string>
+	<string name="subscribe">Subscribe</string>
+	<string name="news">Breaking News!!!</string>
+	<string name="hello">Hello World, MyAppActivity!</string>
+    <string name="app_name">BlueNET</string>
+    <string name="title_device_list">Device List</string>
+    <string name="title_other_devices">Other Devices</string>
+    <string name="button_scan">Scan for Devices</string>
+    <string name="scanning">Scanning for devices</string>
+    <string name="none_paired">No paired devices found</string>
+    <string name="none_found">No devices found</string>
+    <string name="select_device">Select a device</string>
+    <string name="toggleBtn_server">Server</string>
+    <string name="toggleBtn_Client">Client</string>
+	
+</resources>
