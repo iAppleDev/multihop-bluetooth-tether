@@ -366,8 +366,9 @@ public class MyAppActivity extends Activity {
 			{
 				execCommandLine("pand --killall");
 				execCommandLine("killall -9 pand");
+				state = "NONE\n";
 			}
-			connectedList = "List of connected clients:\n======================\n";
+			connectedList = "List of connected clients:\n========================\n";
 			updateTextView();
 			// mServeThread.cancel(true);
 		}
