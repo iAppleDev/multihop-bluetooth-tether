@@ -22,17 +22,23 @@ public final class R {
         public static final int untitled=0x7f020008;
     }
     public static final class id {
-        public static final int RX=0x7f060009;
+        public static final int RX=0x7f06000f;
         public static final int ScrollView01=0x7f060002;
-        public static final int TX=0x7f060008;
-        public static final int discoverable=0x7f06000b;
-        public static final int exit=0x7f06000a;
+        public static final int TX=0x7f06000c;
+        public static final int discoverable=0x7f060011;
+        public static final int exit=0x7f060010;
         public static final int paired_devices=0x7f060001;
-        public static final int status_info=0x7f060007;
+        public static final int progressBar1=0x7f060006;
+        public static final int progressBar2=0x7f060007;
+        public static final int status_info=0x7f060009;
         public static final int tableLayoutCtrlPanel=0x7f060003;
+        public static final int tableLayoutReceive=0x7f06000d;
+        public static final int tableLayoutSent=0x7f06000a;
         public static final int tableRowCtrlPanel=0x7f060004;
+        public static final int tableRowReceiveStats=0x7f06000e;
+        public static final int tableRowSentStats=0x7f06000b;
         public static final int title_paired_devices=0x7f060000;
-        public static final int toggleButtonClient=0x7f060006;
+        public static final int toggleButtonClient=0x7f060008;
         public static final int toggleButtonServer=0x7f060005;
     }
     public static final class layout {
