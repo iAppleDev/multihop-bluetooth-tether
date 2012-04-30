@@ -11,39 +11,46 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int ic_tab_artists=0x7f020001;
-        public static final int ic_tab_artists_grey=0x7f020002;
-        public static final int ic_tab_artists_white=0x7f020003;
-        public static final int untitled=0x7f020004;
+        public static final int bluenet=0x7f020000;
+        public static final int bluetooth=0x7f020001;
+        public static final int gloss=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int ic_tab_artists=0x7f020004;
+        public static final int ic_tab_artists_grey=0x7f020005;
+        public static final int ic_tab_artists_white=0x7f020006;
+        public static final int sample=0x7f020007;
+        public static final int untitled=0x7f020008;
     }
     public static final class id {
-        public static final int ProgressBar01=0x7f050003;
-        public static final int ScrollView01=0x7f050000;
-        public static final int all_devices=0x7f05000c;
-        public static final int button1=0x7f050008;
-        public static final int progressBar1=0x7f050007;
-        public static final int progressBar2=0x7f050005;
-        public static final int progressBar3=0x7f050009;
-        public static final int status_info=0x7f05000b;
-        public static final int tableLayoutCtrlPanel=0x7f050001;
-        public static final int tableRowCtrlPanel=0x7f050002;
-        public static final int title_all_devices=0x7f05000a;
-        public static final int toggleButtonClient=0x7f050006;
-        public static final int toggleButtonServer=0x7f050004;
+        public static final int ScrollView01=0x7f060002;
+        public static final int discoverable=0x7f060009;
+        public static final int exit=0x7f060008;
+        public static final int paired_devices=0x7f060001;
+        public static final int status_info=0x7f060007;
+        public static final int tableLayoutCtrlPanel=0x7f060003;
+        public static final int tableRowCtrlPanel=0x7f060004;
+        public static final int title_paired_devices=0x7f060000;
+        public static final int toggleButtonClient=0x7f060006;
+        public static final int toggleButtonServer=0x7f060005;
     }
     public static final class layout {
-        public static final int device_name=0x7f030000;
-        public static final int first=0x7f030001;
-        public static final int main=0x7f030002;
-        public static final int second=0x7f030003;
-        public static final int third=0x7f030004;
+        public static final int device_list=0x7f030000;
+        public static final int device_name=0x7f030001;
+        public static final int first=0x7f030002;
+        public static final int main=0x7f030003;
+        public static final int second=0x7f030004;
+        public static final int third=0x7f030005;
+    }
+    public static final class menu {
+        public static final int option_menu=0x7f050000;
     }
     public static final class string {
         public static final int app_name=0x7f040010;
         public static final int button_scan=0x7f040013;
         public static final int client=0x7f040001;
+        public static final int discoverable=0x7f04001b;
         public static final int entertainmentcheck=0x7f04000b;
+        public static final int exit=0x7f04001c;
         public static final int hello=0x7f04000f;
         public static final int keyword=0x7f040008;
         public static final int net_status=0x7f04001a;

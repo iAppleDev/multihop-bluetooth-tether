@@ -23,13 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <ProgressBar
-                android:id="@+id/ProgressBar01"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible" />
-
 
             <ToggleButton
                 android:id="@+id/toggleButtonServer"
@@ -40,76 +33,28 @@
                 android:textOff="Server OFF"
                 android:textOn="Server ON" />
 
-            <ProgressBar
-                android:id="@+id/progressBar2"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible" />
-
-
             <ToggleButton
                 android:id="@+id/toggleButtonClient"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight=".5"
                 android:onClick="onClientClicked"
                 android:textOff="Client OFF"
                 android:textOn="Client ON" />
 
-            <ProgressBar
-                android:id="@+id/progressBar1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-            <Button
-                android:id="@+id/button1"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Exit" android:onClick="onExitClicked"/>
-
-            <ProgressBar
-                android:id="@+id/progressBar3"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:visibility="invisible"/>
-
         </TableRow>
     </TableLayout>
 
-
-    <TextView
-        android:id="@+id/title_all_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#666"
-        android:paddingLeft="5dp"
-        android:text="@string/title_device_list"
-        android:textColor="#fff"
-        android:visibility="gone" />
-    
     <TextView
         android:id="@+id/status_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#666"
+        android:layout_gravity="top"
+        android:background="#000"
         android:paddingLeft="5dp"
         android:text="@string/net_status"
-        android:textColor="#fff"
-        android:visibility="visible" />
-
-
-    <ListView
-        android:id="@+id/all_devices"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="top|fill_vertical"
-        android:layout_weight="1"
-        android:stackFromBottom="false"
-        android:textFilterEnabled="true" >
-
-    </ListView>
+        android:textColor="#0f0"
+        android:visibility="visible" android:textSize="15dp" android:scrollbars="vertical" android:scrollbarStyle="insideOverlay"/>
 
 </LinearLayout>
 

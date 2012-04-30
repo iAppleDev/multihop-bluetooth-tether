@@ -28,5 +28,7 @@
     <string name="toggleBtn_server">Server</string>
     <string name="toggleBtn_Client">Client</string>
     <string name="net_status">Network Status</string>
+    <string name="discoverable">Make Discoverable</string>
+    <string name="exit">Exit</string>
 	
 </resources>
