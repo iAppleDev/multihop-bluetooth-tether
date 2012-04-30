@@ -47,7 +47,7 @@ public class MyAppActivity extends Activity {
 	public static final String NETMASK = "255.255.255.0";
 	// private AsyncTask<String, Integer, Integer> mAcceptThread;
 	AcceptThread mAcceptThread;
-	String mServerAddress = null;
+	public static String mServerAddress = null;
 	public static boolean isServer = false;
 	public static boolean isGatewayServer = false;
 	private static boolean setupOnGoing = false;
@@ -424,6 +424,13 @@ public class MyAppActivity extends Activity {
 					addressDB[index - 1].used = true;
 					state = "CLIENT\n";
 					updateTextView();
+					// Update network topology
+					HelloTabActivity.netMap[0][0] = HelloTabActivity.netMap[1][1]= 0;
+					HelloTabActivity.count++;
+					HelloTabActivity.netMap_List.put(mmSocket.getRemoteDevice().getAddress(),0);
+					HelloTabActivity.netMap_List.put(mBtAdapter.getAddress(),1);
+					HelloTabActivity.netMap[0][1] = HelloTabActivity.netMap[1][0] = 1;
+					HelloTabActivity.count++;
 
 				} catch (IOException e) { // Close the socket
 					try {
