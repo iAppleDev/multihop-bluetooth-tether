@@ -1,6 +1,7 @@
 package com.hellotab.bluenet;
 
 import android.app.TabActivity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ public class HelloTabActivity extends TabActivity {
         TabHost.TabSpec spec;  // Resusable TabSpec for each tab
         Intent intent;  // Reusable Intent for each tab
 
+		setTitle(getTitle() + " " + BluetoothAdapter.getDefaultAdapter().getAddress());
+        
         // Create an Intent to launch an Activity for the tab (to be reused)
         intent = new Intent().setClass(this, MyAppActivity.class);
 

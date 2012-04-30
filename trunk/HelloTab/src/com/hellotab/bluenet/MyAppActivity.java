@@ -127,7 +127,6 @@ public class MyAppActivity extends Activity {
 
 		oldName = mBtAdapter.getName();
 		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
-		setTitle(getTitle() + " " + mBtAdapter.getAddress());
 		
 		execCommandLine("pand --killall");
 		execCommandLine("killall -9 pand");
