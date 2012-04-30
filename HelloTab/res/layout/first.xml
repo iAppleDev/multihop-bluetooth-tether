@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:label="Hello"
     android:scrollbars="vertical" >
-
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
@@ -56,6 +55,47 @@
         android:textColor="#0f0"
         android:visibility="visible" android:textSize="15dp" android:scrollbars="vertical" android:scrollbarStyle="insideOverlay"/>
 
+    
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="20dip"
+            android:text="Traffic Stats Demo"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Transmit Bytes"
+            android:textColor="#00ff00"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/TX"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="0"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Receive Bytes"
+            android:textColor="#ff0000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/RX"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="0"
+            android:textSize="14sp" />
 </LinearLayout>
 
 </ScrollView>

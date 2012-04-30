@@ -9,13 +9,16 @@ import java.io.OutputStreamWriter;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.TrafficStats;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,6 +56,10 @@ public class MyAppActivity extends Activity {
 	public static String connectedList;
 	public static String state;
 
+	private Handler mHandler = new Handler();
+	private long mStartRX = 0;
+	private long mStartTX = 0;    
+	
 	public class addressList {
 		String ipaddrServ;
 		String ipaddrClient;
@@ -124,8 +131,31 @@ public class MyAppActivity extends Activity {
 
 		updateTextView();
 		mAcceptThread = (AcceptThread) new AcceptThread(this, tv).execute();
+		
+		mStartRX = TrafficStats.getTotalRxBytes();
+		mStartTX = TrafficStats.getTotalTxBytes();
+		if (mStartRX == TrafficStats.UNSUPPORTED || mStartTX == TrafficStats.UNSUPPORTED) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle("Uh Oh!");
+			alert.setMessage("Your device does not support traffic stat monitoring.");
+			alert.show();
+		} else {
+			mHandler.postDelayed(mRunnable, 1000);
+		}
 	}
 
+	private final Runnable mRunnable = new Runnable() {
+		public void run() {
+			TextView RX = (TextView)findViewById(R.id.RX);
+			TextView TX = (TextView)findViewById(R.id.TX);
+			long rxBytes = TrafficStats.getTotalRxBytes()- mStartRX;
+			RX.setText(Long.toString(rxBytes));
+			long txBytes = TrafficStats.getTotalTxBytes()- mStartTX;
+			TX.setText(Long.toString(txBytes));
+			mHandler.postDelayed(mRunnable, 1000);
+		}
+	};
+	
 	private void updateTextView() {
 		tv.setText(MyAppActivity.myInfo + "State: " + MyAppActivity.state
 				+"\n"+ MyAppActivity.connectedList);
