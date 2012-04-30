@@ -14,7 +14,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,10 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -38,15 +34,12 @@ public class MyAppActivity extends Activity {
 	private static final String BNET_DEVICE = "BNET_Device";
 
 	private static final int REQUEST_CONNECT_DEVICE = 2;
-	
+
 	private String oldName = null;
 	// Member fields
 	private BluetoothAdapter mBtAdapter;
 	private ArrayAdapter<String> mDevicesArrayAdapter;
-	private ListView mDeviceListView;
-
 	private TextView tv;
-	
 
 	public static final String NETMASK = "255.255.255.0";
 	// private AsyncTask<String, Integer, Integer> mAcceptThread;
@@ -55,7 +48,7 @@ public class MyAppActivity extends Activity {
 	public static boolean isServer = false;
 	public static boolean isGatewayServer = false;
 	private static boolean setupOnGoing = false;
-	
+
 	public static String myInfo;
 	public static String connectedList;
 	public static String state;
@@ -80,33 +73,29 @@ public class MyAppActivity extends Activity {
 			addressDB[i].used = false;
 		}
 	}
-	
+
 	public static String getServerIPAddress(String clientMACAddr) {
 		for (int i = 0; i < 255; ++i) {
-			if (addressDB[i].used == true && clientMACAddr.equalsIgnoreCase(addressDB[i].clientMacAddr)) {
+			if (addressDB[i].used == true
+					&& clientMACAddr
+							.equalsIgnoreCase(addressDB[i].clientMacAddr)) {
 				return addressDB[i].ipaddrServ;
 			}
 		}
 		return null;
 	}
-	
+
 	int i = 0;
+
 	protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-             
-        setContentView(R.layout.first);
-        
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.first);
+
 		// Initialize array adapters. One for already paired devices and
 		// one for newly discovered devices
 		mDevicesArrayAdapter = new ArrayAdapter<String>(this,
 				R.layout.device_name);
-   
-		// Find and set up the ListView for paired devices
-		/*mDeviceListView = (ListView) findViewById(R.id.all_devices);
-		mDeviceListView.setAdapter(mDevicesArrayAdapter);
-		mDeviceListView.setOnItemClickListener(mDeviceClickListener);
-		mDeviceListView.setVisibility(View.INVISIBLE);
-*/
 
 		tv = (TextView) findViewById(R.id.status_info);
 		state = "NONE\n";
@@ -114,7 +103,7 @@ public class MyAppActivity extends Activity {
 
 		// Get the local Bluetooth adapter
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-		myInfo = "My Mac:"+mBtAdapter.getAddress()+"\n";
+		myInfo = "My Mac:" + mBtAdapter.getAddress() + "\n";
 		if (!mBtAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -123,7 +112,7 @@ public class MyAppActivity extends Activity {
 
 		oldName = mBtAdapter.getName();
 		mBtAdapter.setName(BNET_DEVICE + "_" + mBtAdapter.getAddress());
-		
+
 		execCommandLine("pand --killall");
 		execCommandLine("killall -9 pand");
 		initializeAddressList();
@@ -135,41 +124,38 @@ public class MyAppActivity extends Activity {
 
 		updateTextView();
 		mAcceptThread = (AcceptThread) new AcceptThread(this, tv).execute();
-             
-    }
-	
-    private void updateTextView() {
-    	tv.setText(MyAppActivity.myInfo+"State:"+MyAppActivity.state+"========================\n"+MyAppActivity.connectedList);
+	}
+
+	private void updateTextView() {
+		tv.setText(MyAppActivity.myInfo + "State:" + MyAppActivity.state
+				+ "========================\n" + MyAppActivity.connectedList);
 	}
 
 	@Override
-    public synchronized void onPause() {
-        super.onPause();
-    }
+	public synchronized void onPause() {
+		super.onPause();
+	}
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
 
-    private void ensureDiscoverable() {
-        if (mBtAdapter.getScanMode() !=
-            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 900);
-            startActivity(discoverableIntent);
-        }
-    }
-    
-    public void onMDClicked(View v) {
-    	ensureDiscoverable();
-    }
-	
-    @Override
-    public synchronized void onResume() {
-        super.onResume();
-    }
-    
+	private void ensureDiscoverable() {
+		if (mBtAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+			Intent discoverableIntent = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			discoverableIntent.putExtra(
+					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 900);
+			startActivity(discoverableIntent);
+		}
+	}
+
+	@Override
+	public synchronized void onResume() {
+		super.onResume();
+	}
+
 	public static String execCommandLine(String command) {
 		Runtime runtime = Runtime.getRuntime();
 		Process proc = null;
@@ -222,14 +208,13 @@ public class MyAppActivity extends Activity {
 		}
 		return null;
 	}
-	
 
 	public void onClientClicked(View v) {
 		mDevicesArrayAdapter.clear();
 		if (((ToggleButton) v).isChecked()) {
 
-            Intent serverIntent = new Intent(this, BtScannerActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+			Intent serverIntent = new Intent(this, BtScannerActivity.class);
+			startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 
 		} else {
 			execCommandLine("pand --killall");
@@ -240,7 +225,7 @@ public class MyAppActivity extends Activity {
 							.getRemoteDevice(mServerAddress);
 					BluetoothSocket mmSocket = device
 							.createRfcommSocketToServiceRecord(MY_UUID);
-					
+
 					OutputStream tmpOut = null;
 					tmpOut = mmSocket.getOutputStream();
 					mmSocket = null;
@@ -264,14 +249,10 @@ public class MyAppActivity extends Activity {
 				serverButton.setEnabled(false);
 			}
 			mServerAddress = null;
-			mDeviceListView.setVisibility(View.INVISIBLE);
-			//findViewById(R.id.title_all_devices).setVisibility(View.INVISIBLE);
-			state= "NONE\n";
+			state = "NONE\n";
 			updateTextView();
 		}
 	}
-
-
 
 	public void onServerClicked(View v) {
 		if (((ToggleButton) v).isChecked() == true) {
@@ -284,21 +265,17 @@ public class MyAppActivity extends Activity {
 			execCommandLine("pand --listen --role NAP");
 
 			isServer = true;
-			if(isGatewayServer == true)
-			{
+			if (isGatewayServer == true) {
 				state = "GATEWAY SERVER\n";
 				updateTextView();
-			}
-			else
-			{
+			} else {
 				state = "INTERMEDIATE SERVER\n";
 				updateTextView();
 			}
 		} else {
 			initializeAddressList();
 			isServer = false;
-			if(isGatewayServer == true)
-			{
+			if (isGatewayServer == true) {
 				execCommandLine("pand --killall");
 				execCommandLine("killall -9 pand");
 				state = "NONE\n";
@@ -307,14 +284,6 @@ public class MyAppActivity extends Activity {
 			updateTextView();
 			// mServeThread.cancel(true);
 		}
-	}
-
-	public void onExitClicked(View v) {
-		mBtAdapter.setName(oldName);
-		initializeAddressList();
-		execCommandLine("pand --killall");
-		execCommandLine("killall -9 pand");
-		finish();
 	}
 
 	public boolean isOnline() {
@@ -326,7 +295,7 @@ public class MyAppActivity extends Activity {
 			return false;
 	}
 
-	private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
+/*	private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> av, View v, int position,
 				long arg3) {
 			// Cancel discovery because it's costly and we're about to connect
@@ -395,8 +364,9 @@ public class MyAppActivity extends Activity {
 
 				String numbers[] = myIP.split("\\.");
 				int index = Integer.parseInt(numbers[2]);
-				myInfo = "MyMAC:"+mBtAdapter.getAddress() + "\n"+"My Primary IP:"+myIP+"\n===================\n";
-				addressDB[index-1].used = true;
+				myInfo = "MyMAC:" + mBtAdapter.getAddress() + "\n"
+						+ "My Primary IP:" + myIP + "\n===================\n";
+				addressDB[index - 1].used = true;
 				state = "CLIENT\n";
 				updateTextView();
 
@@ -413,7 +383,7 @@ public class MyAppActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
-	};
+	};*/
 
 	private void ConnectToBluetoothServer(String myIP, String gatewayAddress,
 			String serverMACAddress) throws InterruptedException {
@@ -442,22 +412,87 @@ public class MyAppActivity extends Activity {
 			mBtAdapter.cancelDiscovery();
 		}
 	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case REQUEST_CONNECT_DEVICE:
-            // When DeviceListActivity returns with a device to connect
-            if (resultCode == Activity.RESULT_OK) {
-                // Get the device MAC address
-                String address = data.getExtras()
-                                     .getString(BtScannerActivity.EXTRA_DEVICE_ADDRESS);
-                // Get the BLuetoothDevice object
-                BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
-                // Attempt to connect to the device
-                Toast.makeText(this,
-						"Connecting to:  " + device.getAddress(),
+			// When DeviceListActivity returns with a device to connect
+			if (resultCode == Activity.RESULT_OK) {
+				// Get the device MAC address
+				String address = data.getExtras().getString(
+						BtScannerActivity.EXTRA_DEVICE_ADDRESS);
+				// Get the BLuetoothDevice object
+				BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
+				// Attempt to connect to the device
+				Toast.makeText(this, "Connecting to:  " + device.getAddress(),
 						Toast.LENGTH_SHORT).show();
-            }
-            break;
+				
+				mServerAddress = address;
+				BluetoothSocket mmSocket = null;
+
+				// Make a connection to the BluetoothSocket
+				try {
+					mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+					mmSocket.connect();
+					InputStream tmpIn = null;
+					OutputStream tmpOut = null;
+
+					tmpIn = mmSocket.getInputStream();
+					tmpOut = mmSocket.getOutputStream();
+
+					byte[] buffer = new byte[1024];
+
+					// Read from the InputStream
+					String msg = "CONNECT";
+					tmpOut.write(msg.getBytes());
+					tmpIn.read(buffer);
+					msg = new String(buffer);
+
+					// todo:
+					String ipAddresses[] = msg.split(":");
+					String myIP = ipAddresses[0];
+					String gatewayAddress = ipAddresses[1];
+					ConnectToBluetoothServer(myIP, gatewayAddress, address);
+
+					mmSocket.close();
+					mmSocket = null;
+
+					mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+
+					mmSocket.connect();
+					tmpIn = mmSocket.getInputStream();
+					tmpOut = mmSocket.getOutputStream();
+					msg = new String("CONNECTED");
+					tmpOut.write(msg.getBytes());
+					mmSocket.close();
+
+					ToggleButton serverButton = (ToggleButton) findViewById(R.id.toggleButtonServer);
+					serverButton.setEnabled(true);
+					isGatewayServer = false;
+
+					String numbers[] = myIP.split("\\.");
+					int index = Integer.parseInt(numbers[2]);
+					myInfo = "MyMAC:" + mBtAdapter.getAddress() + "\n"
+							+ "My Primary IP:" + myIP + "\n===================\n";
+					addressDB[index - 1].used = true;
+					state = "CLIENT\n";
+					updateTextView();
+
+				} catch (IOException e) { // Close the socket
+					try {
+						mmSocket.close();
+					} catch (IOException e2) {
+						System.out
+								.println("unable to close() socket during connection failure :");
+						e2.printStackTrace();
+					}
+					return;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+			}
+			break;
 		case REQUEST_ENABLE_BT:
 			// When the request to enable Bluetooth returns
 			if (resultCode != Activity.RESULT_OK) {
@@ -469,7 +504,7 @@ public class MyAppActivity extends Activity {
 			}
 		}
 	}
-	
+
 	public static String setUpbnep(String clientMac) {
 		String outMsg;
 		if (setupOnGoing == true) {
@@ -557,6 +592,7 @@ public class MyAppActivity extends Activity {
 		outMsg = "DONE_CONNECTED";
 		return outMsg;
 	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -581,5 +617,5 @@ public class MyAppActivity extends Activity {
 		}
 		return false;
 	}
-	
+
 }
