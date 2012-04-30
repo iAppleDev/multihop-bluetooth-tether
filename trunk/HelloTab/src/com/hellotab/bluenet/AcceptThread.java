@@ -130,7 +130,7 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 										MyAppActivity.addressDB[i].clientMacAddr = socket
 												.getRemoteDevice().getAddress();
 										MyAppActivity.addressDB[i].used = true;
-										MyAppActivity.connectedList += "Client<IP><MAC>: <"+ MyAppActivity.addressDB[i].ipaddrClient+"><"+MyAppActivity.addressDB[i].clientMacAddr+ ">\n";
+										MyAppActivity.connectedList += MyAppActivity.addressDB[i].ipaddrClient+" - "+ MyAppActivity.addressDB[i].clientMacAddr+ "\n";
 										publishProgress(param);
 										break;
 									}
@@ -153,7 +153,6 @@ public class AcceptThread extends AsyncTask<String, Integer, Integer> {
 
 	@Override
 	protected void onProgressUpdate(Integer... param) {
-	       tv.setText(MyAppActivity.myInfo+"State:"+MyAppActivity.state+"========================\n"+MyAppActivity.connectedList);
-		
+	       tv.setText(MyAppActivity.myInfo+"State: "+MyAppActivity.state+"\n"+MyAppActivity.connectedList);
 	}
 }
