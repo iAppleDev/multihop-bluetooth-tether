@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:label="Hello"
+    android:scrollbars="vertical" >
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" android:gravity="center">
+
+    <TableLayout
+        android:id="@+id/tableLayoutCtrlPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top" android:paddingTop="10dp">
+
+        <TableRow
+            android:id="@+id/tableRowCtrlPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ProgressBar
+                android:id="@+id/ProgressBar01"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible" />
+
+
+            <ToggleButton
+                android:id="@+id/toggleButtonServer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:onClick="onServerClicked"
+                android:textOff="Server OFF"
+                android:textOn="Server ON" />
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible" />
+
+
+            <ToggleButton
+                android:id="@+id/toggleButtonClient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:onClick="onClientClicked"
+                android:textOff="Client OFF"
+                android:textOn="Client ON" />
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Exit" android:onClick="onExitClicked"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar3"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:visibility="invisible"/>
+
+        </TableRow>
+    </TableLayout>
+
+
+    <TextView
+        android:id="@+id/title_all_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#666"
+        android:paddingLeft="5dp"
+        android:text="@string/title_device_list"
+        android:textColor="#fff"
+        android:visibility="gone" />
+
+
+    <ListView
+        android:id="@+id/all_devices"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="top|fill_vertical"
+        android:layout_weight="1"
+        android:stackFromBottom="false"
+        android:textFilterEnabled="true" >
+
+    </ListView>
+
+</LinearLayout>
+
+</ScrollView>

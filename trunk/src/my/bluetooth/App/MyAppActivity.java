@@ -61,7 +61,6 @@ public class MyAppActivity extends Activity {
 		String ipaddrServ;
 		String ipaddrClient;
 		String gateway;
-		String netmask;
 		String clientMacAddr;
 	}
 
@@ -73,7 +72,6 @@ public class MyAppActivity extends Activity {
 			addressDB[i] = new addressList();
 			addressDB[i].ipaddrServ = "10.0." + (i + 1) + ".1";
 			addressDB[i].ipaddrClient = "10.0." + (i + 1) + ".2";
-			addressDB[i].netmask = "255.255.255.0";
 			addressDB[i].gateway = addressDB[i].ipaddrServ;
 			addressDB[i].clientMacAddr = "";
 		}
@@ -284,14 +282,20 @@ public class MyAppActivity extends Activity {
 		} else {
 			initializeAddressList();
 			isServer = false;
-			execCommandLine("pand --killall");
-			execCommandLine("killall -9 pand");
+			if(isGatewayServer == true)
+			{
+				execCommandLine("pand --killall");
+				execCommandLine("killall -9 pand");
+			}
 			// mServeThread.cancel(true);
 		}
 	}
 
 	public void onExitClicked(View v) {
 		mBtAdapter.setName(oldName);
+		initializeAddressList();
+		execCommandLine("pand --killall");
+		execCommandLine("killall -9 pand");
 		finish();
 	}
 
