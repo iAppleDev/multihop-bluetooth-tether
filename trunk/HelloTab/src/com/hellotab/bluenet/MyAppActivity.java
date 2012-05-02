@@ -1,3 +1,10 @@
+/*
+ * Authors:
+ * Arun Sriraman
+ * Shyam Prasad
+ * Rahul Khandelwal
+ * Venkatesh Shenoy
+ */
 package com.hellotab.bluenet;
 
 import java.io.BufferedReader;
@@ -131,7 +138,8 @@ public class MyAppActivity extends Activity {
 
 			updateTextView();
 			mAcceptThread = (AcceptThread) new AcceptThread(this, tv).execute();
-
+			// Traffic monitoring:
+			// Reference: http://www.techrepublic.com/blog/app-builder/create-a-network-monitor-using-androids-trafficstats-class/774
 			mStartRX = TrafficStats.getTotalRxBytes();
 			mStartTX = TrafficStats.getTotalTxBytes();
 			if (mStartRX == TrafficStats.UNSUPPORTED
