@@ -1,8 +1,11 @@
 package com.hellotab.bluenet;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,7 +18,7 @@ public class CustomDrawableView extends View {
 
 	Queue<Integer> queue = new LinkedList<Integer>();
 	Queue<Integer> q = new LinkedList<Integer>();
-
+	BluetoothAdapter myAdaptor;
 
 	Paint paint = new Paint();
 	Paint paint1 = new Paint();
@@ -44,7 +47,29 @@ public class CustomDrawableView extends View {
 
 	@Override
 	public void onDraw(Canvas canvas) {
-
+		CustomDrawableView.adjMatrix1 = HelloTabActivity.netMap;
+		Set<String> keys = HelloTabActivity.netMap_List.keySet();
+		Iterator<String> keyList = keys.iterator();
+		myAdaptor = BluetoothAdapter.getDefaultAdapter();
+		ThirdActivity.macs[0] = MyAppActivity.mServerAddress;
+		ThirdActivity.macs[1] = myAdaptor.getAddress();
+		int count = 2;
+		while(keyList.hasNext()){
+			String key = keyList.next();
+			if(!key.equals(ThirdActivity.macs[0]) && !key.equals(ThirdActivity.macs[1]))
+			{
+				ThirdActivity.macs[count] = key;
+				++count;
+			}
+		}
+		for(int i =0; i < 5; ++i)
+			if(ThirdActivity.macs[i] == null)
+				ThirdActivity.macs[i] = "";
+		
+		
+		
+		
+		
 		int node = 1;
 		int x = 480;
 		int y = 40;
