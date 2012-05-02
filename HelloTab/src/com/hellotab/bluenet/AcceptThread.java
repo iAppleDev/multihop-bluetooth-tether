@@ -1,3 +1,11 @@
+/*
+* Authors:
+* Arun Sriraman
+* Shyam Prasad
+* Rahul Khandelwal
+* Venkatesh Shenoy
+* Reference: http://developer.android.com/resources/samples/BluetoothChat/index.html
+*/
 package com.hellotab.bluenet;
 
 import java.io.IOException;
