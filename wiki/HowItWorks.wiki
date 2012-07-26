@@ -1,0 +1,10 @@
+#summary Flowchat of how the software works
+#labels Phase-Design,Phase-Requirements
+
+= App design =
+
+The following flowchart details the workflow of the app
+
+<p>
+http://multihop-bluetooth-tether.googlecode.com/svn/trunk/HelloTab/screenshots/Multihop-Application_Workflow.jpg
+</p>
